@@ -1,0 +1,62 @@
+GET http://localhost:41293/count/general HTTP/1.1
+Host: localhost:41293
+Content-Type: application/x-www-form-urlencoded;
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36
+Upgrade-Insecure-Requests: 1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Cookie: ASP.NET_SessionId=wxd5qodtz4j5hj4vv5sudf15; .ASPXAUTH=189FC1B2A9A117131E12CADD1EA68896E43E6743CF92EB978AFEC425B3508683348D1EA4B5FDA03330FB0C8D9B1D12D0988E4C822FFC15134E81247114B6B2BB98AE6A4CBED69A9078C5C0D4F59B40BB4055A6F49E1457E6B51D5261585E3FA0F7A012CBCED26DDFDF22CB0D251D73B1097F8F8B80190E13F372726F24C021F3
+Content-Length: 15
+
+district=samken
+
+
+GET http://localhost:41293/count/general HTTP/1.1
+Host: localhost:41293
+Content-Type: application/json;
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36
+Upgrade-Insecure-Requests: 1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Cookie: ASP.NET_SessionId=wxd5qodtz4j5hj4vv5sudf15; .ASPXAUTH=189FC1B2A9A117131E12CADD1EA68896E43E6743CF92EB978AFEC425B3508683348D1EA4B5FDA03330FB0C8D9B1D12D0988E4C822FFC15134E81247114B6B2BB98AE6A4CBED69A9078C5C0D4F59B40BB4055A6F49E1457E6B51D5261585E3FA0F7A012CBCED26DDFDF22CB0D251D73B1097F8F8B80190E13F372726F24C021F3
+Content-Length: 15
+
+{ "district": "samken"}
+
+==================================================================================================================
+
+POST http://localhost:41293/api/suffixnested/isgreeting HTTP/1.1
+Host: localhost:41293
+Connection: keep-alive
+Content-Length: 18
+Pragma: no-cache
+Cache-Control: no-cache
+Accept: */*
+Origin: http://localhost:41293
+X-Requested-With: XMLHttpRequest
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36
+Content-Type: application/json; charset=UTF-8
+Referer: http://localhost:41293/
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Cookie: ASP.NET_SessionId=wxd5qodtz4j5hj4vv5sudf15; .ASPXAUTH=189FC1B2A9A117131E12CADD1EA68896E43E6743CF92EB978AFEC425B3508683348D1EA4B5FDA03330FB0C8D9B1D12D0988E4C822FFC15134E81247114B6B2BB98AE6A4CBED69A9078C5C0D4F59B40BB4055A6F49E1457E6B51D5261585E3FA0F7A012CBCED26DDFDF22CB0D251D73B1097F8F8B80190E13F372726F24C021F3
+
+{"keyword":"Haki"}
+
+GET http://localhost:41293/api/SuffixNested/isgreeting HTTP/1.1
+Host: localhost:41293
+Connection: keep-alive
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Safari/537.36
+Upgrade-Insecure-Requests: 1
+Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8
+Accept-Encoding: gzip, deflate, br
+Accept-Language: en-US,en;q=0.9
+Cookie: ASP.NET_SessionId=wxd5qodtz4j5hj4vv5sudf15; .ASPXAUTH=189FC1B2A9A117131E12CADD1EA68896E43E6743CF92EB978AFEC425B3508683348D1EA4B5FDA03330FB0C8D9B1D12D0988E4C822FFC15134E81247114B6B2BB98AE6A4CBED69A9078C5C0D4F59B40BB4055A6F49E1457E6B51D5261585E3FA0F7A012CBCED26DDFDF22CB0D251D73B1097F8F8B80190E13F372726F24C021F3
+Content-Length: 21
+
+{keyword: 'Haki'}
+
