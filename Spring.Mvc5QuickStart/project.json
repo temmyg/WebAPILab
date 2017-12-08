@@ -16,6 +16,7 @@
     "Microsoft.jQuery.Unobtrusive.Validation": "3.0.0",
     "Microsoft.Web.Infrastructure": "1.0.0.0",
     "Modernizr": "2.7.1",
+    "Newtonsoft.Json": "10.0.3",
     "Spring.Web.Mvc5": "2.0.1",
     "WebGrease": "1.5.2"
   },
