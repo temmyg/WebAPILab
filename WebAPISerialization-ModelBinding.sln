@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPISerializationModelBinding", "Spring.Mvc5QuickStart\WebAPISerializationModelBinding.csproj", "{DF416FCD-EEB2-4811-8CEE-17E0E7D418E3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebAPISerializationModelBinding", "WebAPISerializationModelBinding\WebAPISerializationModelBinding.csproj", "{DF416FCD-EEB2-4811-8CEE-17E0E7D418E3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{4A2796E5-17F2-40EA-8B5A-10653BEDE033}"
 	ProjectSection(SolutionItems) = preProject
