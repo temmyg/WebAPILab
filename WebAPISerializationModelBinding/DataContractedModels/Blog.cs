@@ -11,12 +11,14 @@ namespace Spring.Mvc5QuickStart.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using Newtonsoft.Json;
     //using System.Runtime.Serialization;
     
     //[DataContract(IsReference=true)]
+    //[JsonObject(IsReference = false)]
     public partial class Blog
-    {
+    {   
+        public Blog(string name) { }
     	
         //[DataMember]
         public System.Guid ID { get; set; }

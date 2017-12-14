@@ -1,3 +1,6 @@
 .vs/
 WebAPISerializationModelBinding/obj/
 WebAPISerializationModelBinding/bin/
+packages/
+MVCApplication/bin/
+MVCApplication/obj/

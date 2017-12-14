@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="BlogsModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="BlogsModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Author">
           <Key>
             <PropertyRef Name="Id" />
@@ -12,9 +12,6 @@
           <Property Name="FirstName" Type="nvarchar" MaxLength="50" Nullable="false" />
           <Property Name="LastName" Type="nvarchar" MaxLength="50" />
           <Property Name="Id" Type="bigint" Nullable="false" />
-          <Property Name="Age" Type="int" />
-          <Property Name="Industry" Type="nvarchar" MaxLength="50" />
-          <Property Name="RegisteredTime" Type="datetime" />
         </EntityType>
         <EntityType Name="Blog">
           <Key>
@@ -46,7 +43,8 @@
             <End Role="Blog" EntitySet="Blog" />
           </AssociationSet>
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="BlogsModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -54,13 +52,10 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
+          <Property Name="FirstName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
           <Property Name="LastName" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
           <Property Name="Id" Type="Int64" Nullable="false" />
           <NavigationProperty Name="Blogs" Relationship="Self.FK_Blog_Author" FromRole="Author" ToRole="Blog" />
-          <Property Name="Age" Type="Int32" />
-          <Property Name="FirstName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="true" ConcurrencyMode="Fixed" />
-          <Property Name="Industry" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="RegisteredTime" Type="DateTime" Precision="3" ConcurrencyMode="Fixed" />
         </EntityType>
         <EntityType Name="Blog">
           <Key>
@@ -102,10 +97,7 @@
           <EntitySetMapping Name="Authors">
             <EntityTypeMapping TypeName="BlogsModel.Author">
               <MappingFragment StoreEntitySet="Author">
-                <ScalarProperty Name="RegisteredTime" ColumnName="RegisteredTime" />
-                <ScalarProperty Name="Industry" ColumnName="Industry" />
                 <ScalarProperty Name="FirstName" ColumnName="FirstName" />
-                <ScalarProperty Name="Age" ColumnName="Age" />
                 <ScalarProperty Name="LastName" ColumnName="LastName" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
@@ -143,6 +135,12 @@
       </DesignerInfoPropertySet>
     </Options>
     <!-- Diagram content (shape and connector positions) -->
-    <Diagrams></Diagrams>
+    <Diagrams>
+      <Diagram DiagramId="f00ffa7479d54651937197bd69eaba31" Name="Diagram1">
+        <EntityTypeShape EntityType="BlogsModel.Author" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="BlogsModel.Blog" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
+        <AssociationConnector Association="BlogsModel.FK_Blog_Author" ManuallyRouted="false" />
+      </Diagram>
+    </Diagrams>
   </Designer>
 </edmx:Edmx>

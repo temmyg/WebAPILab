@@ -13,21 +13,22 @@ namespace Spring.Mvc5QuickStart
     {
         public static void Register(HttpConfiguration config)
         {
-            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling = 
+            config.Formatters.JsonFormatter.SerializerSettings.ReferenceLoopHandling =
                 Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 
             config.Formatters.JsonFormatter.SerializerSettings.PreserveReferencesHandling =
-                Newtonsoft.Json.PreserveReferencesHandling.All;
+                Newtonsoft.Json.PreserveReferencesHandling.None;
 
-            // remove serialized Json object has $id property
+
             //JsonMediaTypeFormatter jsonFormatter = config.Formatters.OfType<JsonMediaTypeFormatter>().Single();
             //jsonFormatter.UseDataContractJsonSerializer = false;
             //jsonFormatter.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
             //jsonFormatter.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+            //// remove serialized Json object with $id property; meanwhile the type must be [DataContract(IsReference=false)]
             //jsonFormatter.SerializerSettings.PreserveReferencesHandling = Newtonsoft.Json.PreserveReferencesHandling.None;
-            //config.Formatters.JsonFormatter.UseDataContractJsonSerializer = false;
 
-            config.Filters.Add(new CustomExceptionFilterAttribute());
+            //config.Filters.Add(new CustomExceptionFilterAttribute());
+            config.Filters.Add(new GeneralExceptionFilter());
 
             config.MapHttpAttributeRoutes();
             config.Routes.MapHttpRoute("controller", "api/{controller}/{action}", new { action = RouteParameter.Optional });

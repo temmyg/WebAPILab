@@ -1774,12 +1774,12 @@
   },
   "project": {
     "restore": {
-      "projectUniqueName": "D:\\SourceCode\\WebAPIModelBindingLab\\Spring.Mvc5QuickStart\\Spring.Mvc5QuickStart.csproj",
-      "projectName": "Spring.Mvc5QuickStart",
-      "projectPath": "D:\\SourceCode\\WebAPIModelBindingLab\\Spring.Mvc5QuickStart\\Spring.Mvc5QuickStart.csproj",
-      "projectJsonPath": "D:\\SourceCode\\WebAPIModelBindingLab\\Spring.Mvc5QuickStart\\project.json",
+      "projectUniqueName": "D:\\SourceCode\\WebAPILab\\WebAPISerializationModelBinding\\WebAPISerializationModelBinding.csproj",
+      "projectName": "WebAPISerializationModelBinding",
+      "projectPath": "D:\\SourceCode\\WebAPILab\\WebAPISerializationModelBinding\\WebAPISerializationModelBinding.csproj",
+      "projectJsonPath": "D:\\SourceCode\\WebAPILab\\WebAPISerializationModelBinding\\project.json",
       "packagesPath": "C:\\Users\\ZHG\\.nuget\\packages\\",
-      "outputPath": "D:\\SourceCode\\WebAPIModelBindingLab\\Spring.Mvc5QuickStart\\obj\\",
+      "outputPath": "D:\\SourceCode\\WebAPILab\\WebAPISerializationModelBinding\\obj\\",
       "projectStyle": "ProjectJson",
       "configFilePaths": [
         "C:\\Users\\ZHG\\AppData\\Roaming\\NuGet\\NuGet.Config",

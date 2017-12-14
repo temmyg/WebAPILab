@@ -94,6 +94,7 @@
     <Compile Include="Controllers\SuffixController.cs" />
     <Compile Include="Counter.cs" />
     <Compile Include="Filters\CustomExceptionFilter.cs" />
+    <Compile Include="Filters\GeneralExceptionFilter.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -101,6 +102,7 @@
     <Compile Include="Models\Author.cs">
       <DependentUpon>Blogs.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Author.partial.cs" />
     <Compile Include="Models\Blog.cs">
       <DependentUpon>Blogs.tt</DependentUpon>
     </Compile>
@@ -202,6 +204,7 @@
     <Content Include="Models\Blogs.edmx.diagram">
       <DependentUpon>Blogs.edmx</DependentUpon>
     </Content>
+    <Content Include="readme.md" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Models\Blogs.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>

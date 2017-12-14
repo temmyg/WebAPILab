@@ -11,89 +11,37 @@ namespace Spring.Mvc5QuickStart.Models
 {
     using System;
     using System.Collections.Generic;
-    using Newtonsoft.Json;
-
+    
     //using System.Runtime.Serialization;
-
-    // with [Serializable] the result is like below:
-    //    {
-    //    "$id": "1",
-    //    "$values": [
-    //        {
-    //            "$id": "2",
-    //            "<FirstName>k__BackingField": "Jerry",
-    //            "<LastName>k__BackingField": "Santosh",
-    //            "<Id>k__BackingField": 1,
-    //            "<Blogs>k__BackingField": {
-    //                "$id": "3",
-    //                "$values": []
-    //}
-    //        },
-    //        {
-    //            "$id": "4",
-    //            "<FirstName>k__BackingField": "Macher",
-    //            "<LastName>k__BackingField": "Kanos",
-    //            "<Id>k__BackingField": 2,
-    //            "<Blogs>k__BackingField": {
-    //                "$id": "5",
-    //                "$values": []
-    //            }
-    //        }
-    //    ]
-    //}
-    //otherwise, it likes: 
-    //    {
-    //    "$id": "1",
-    //    "$values": [
-    //        {
-    //            "$id": "2",
-    //            "FirstName": "Jerry",
-    //            "LastName": "Santosh",
-    //            "Id": 1,
-    //            "Blogs": {
-    //                "$id": "3",
-    //                "$values": []
-    //}
-    //        },
-    //        {
-    //            "$id": "4",
-    //            "FirstName": "Macher",
-    //            "LastName": "Kanos",
-    //            "Id": 2,
-    //            "Blogs": {
-    //                "$id": "5",
-    //                "$values": []
-    //            }
-    //        }
-    //    ]
-    //}
-
+    
     //[DataContract(IsReference=true)]
-    //[Serializable]
-    //[JsonObject(IsReference = false)]
     public partial class Author
     {
-
-        //public Author(string city)
-        //{
-        //    this.Blogs = new HashSet<Blog>();
-        //}
-
         public Author()
         {
             this.Blogs = new HashSet<Blog>();
         }
-
-        //[DataMember]
-        public string FirstName { get; set; }
-
+    
+    	
         //[DataMember]
         public string LastName { get; set; }
-
+    	
         //[DataMember]
         public long Id { get; set; }
-
+    	
         //[DataMember]
+        public Nullable<int> Age { get; set; }
+    	
+        //[DataMember]
+        public string FirstName { get; set; }
+    	
+        //[DataMember]
+        public string Industry { get; set; }
+    	
+        //[DataMember]
+        public Nullable<System.DateTime> RegisteredTime { get; set; }
+    
+    	//[DataMember]
         public virtual ICollection<Blog> Blogs { get; set; }
     }
 }
