@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace Spring.Mvc5QuickStart.Models
+namespace WebAPIComprehensive.Models
 {
     public partial class Author
     {

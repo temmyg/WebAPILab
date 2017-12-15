@@ -2,7 +2,7 @@
 using System.Web.Http;
 using System.Net.Http;
 using System.Net;
-using Spring.Mvc5QuickStart.Models;
+using WebAPIComprehensive.Models;
 using System.Linq;
 using System.ServiceModel;
 using System.Data.Entity;
@@ -10,8 +10,10 @@ using System.Data.Objects;
 using System.Data.Entity.Infrastructure;
 using System;
 using System.Data;
+using System.Net.Http.Formatting;
+using System.Runtime.Serialization;
 
-namespace Spring.Mvc5QuickStart.Controllers
+namespace WebAPIComprehensive.Controllers
 {
     [RoutePrefix("api/suffixnested")]
     public class SuffixNestedController : ApiController
@@ -63,9 +65,33 @@ namespace Spring.Mvc5QuickStart.Controllers
         [Route("authors")]
         [HttpPut]
         public IHttpActionResult AddAuthors(Author[] authors)
-        {
+        {   
             if (ModelState.IsValid && authors != null && authors.Length != 0)
-                return Ok("added");
+            {
+                using (var bc = new BlogEntities())
+                {
+                    foreach (var auth in authors)
+                        bc.Authors.Add(auth);
+                    try
+                    {
+                        bc.SaveChanges();
+                        return Ok(authors);
+                    }
+                    catch(Exception ex)
+                    {
+                        HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.BadRequest)
+                        {
+                            Content = new ObjectContent(typeof(ErrorBody),
+                                new ErrorBody { Error = "not added", Result = authors },
+                                Configuration.Formatters.XmlFormatter)
+                                //new JsonMediaTypeFormatter())
+                        };
+                        throw new HttpResponseException(response);
+                        //return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, 
+                          //  new { Error ="not added", Result = authors })); 
+                    }
+                }
+            }
             else
                 throw new HttpResponseException(HttpStatusCode.BadRequest);
         }
@@ -94,14 +120,19 @@ namespace Spring.Mvc5QuickStart.Controllers
         //		LastName: 'Kanos'
         //	}
         //]
-        [Route("authors")]
+        [Route("authors", Name = "updateAuthors")]
         [HttpPost]
         public IHttpActionResult UpdateAuthors(Author[] data)
         {
             if (data != null && data.Length != 0)
             {
+                List<Author> added = new List<Author>();
+                List<Author> modified = new List<Author>();
+
                 using (var bc = new BlogEntities())
                 {
+                    var authsExists = bc.Authors;
+                    long maxId = authsExists.Max(auth1 => auth1.Id);
                     //bc.Configuration.ProxyCreationEnabled = false;
                     foreach (Author auth in data)
                     {
@@ -110,13 +141,14 @@ namespace Spring.Mvc5QuickStart.Controllers
                         {
                             target.RegisteredTime = DateTime.Now;
                             target.FirstName = "Antone";
+                            modified.Add(target);
                         }
                         else
                         {
-                            var authsExists = bc.Authors;
                             auth.RegisteredTime = DateTime.Now;
-                            auth.Id = authsExists.Max(auth1 => auth1.Id) + 1;
+                            auth.Id = ++maxId;
                             authsExists.Add(auth);
+                            added.Add(auth);
                         }
                     }
 
@@ -133,6 +165,30 @@ namespace Spring.Mvc5QuickStart.Controllers
 
                             bc.SaveChanges();
                             saveSuccess = true;
+
+                            if (added.Count > 1)
+                            {
+                                return Ok(added);
+                            }
+                            else if (added.Count == 1)
+                            {
+                                var responseMessage = Request.CreateResponse(HttpStatusCode.Created, added[0]);
+
+                                // absolute uri
+                                //responseMessage.Headers.Location = new Uri(Url.Link("updateAuthors", null) 
+                                //    + "/" + added[0].Id.ToString());
+                                // relative uri
+                                responseMessage.Headers.Location = new Uri(Url.Route("updateAuthors", null)
+                                        + "/" + added[0].Id.ToString(), UriKind.Relative);
+                                return ResponseMessage(responseMessage);
+                            }
+                            // assume modification and create new request are always sent separately
+                            else if (modified.Count > 0)
+                            {
+                                return Ok(modified);
+                            }
+                            else
+                                return Ok();
                         }
                         catch (DbUpdateConcurrencyException ex)
                         {
@@ -142,38 +198,37 @@ namespace Spring.Mvc5QuickStart.Controllers
                                 entry.Reload();
                                 ((Author)entry.Entity).FirstName = changed;
                             }
-
                             //var updatedAuths = ex.Entries.Select(entry => entry.Entity);
-
                         }
                         catch (DbUpdateException ex)
                         {
                             var authors = bc.Authors;  //.First();
 
                             //DbEntityEntry entry1 = bc.ChangeTracker.Entries()
-                                            //.First(enty => ((Author)enty.Entity).Id == nwau.Id);
+                            //.First(enty => ((Author)enty.Entity).Id == nwau.Id);
 
-                            ((IObjectContextAdapter)bc).ObjectContext.Refresh(RefreshMode.StoreWins, 
+                            ((IObjectContextAdapter)bc).ObjectContext.Refresh(RefreshMode.StoreWins,
                                     authors);   //bc.Authors
-                            long maxId = bc.Authors.Max(a => a.Id);
-                            foreach (var entry in ex.Entries) {
+                            maxId = bc.Authors.Max(a => a.Id);
+                            foreach (var entry in ex.Entries)
+                            {
                                 ((Author)entry.Entity).Id = ++maxId;
                             }
                         }
                     }
                     while (!saveSuccess);
 
-                    Author[] result = bc.Authors.Include(auth1 => auth1.Blogs).ToArray();
-                    return Ok(result);
-                }                
+                    //Author[] result = bc.Authors.Include(auth1 => auth1.Blogs).ToArray();
+                    return Ok();
+                }
             }
             else
+            {
                 throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
                 {
                     Content = new StringContent("no correct data in request body")
                 });
-
-          //  return Ok("changed");
+            }
         }
 
         //PATCH http://localhost:41293/api/SuffixNested/authors?industryname=Bank HTTP/1.1
@@ -196,17 +251,40 @@ namespace Spring.Mvc5QuickStart.Controllers
         {
             using (var bc = new BlogEntities())
             {
-                var authors = bc.Authors;
+                var authors = bc.Authors.Include(a=>a.Blogs);
                 foreach (string id in ids)
                 {
-                    Author au = authors.Find(long.Parse(id));
+                    long authId = long.Parse(id);
+                    Author au = authors.FirstOrDefault(a => a.Id == authId );
                     if (au != null)
                         au.Industry = IndustryName;
                 }
                 bc.SaveChanges();
+                return Ok(authors.ToList());
             }
+        }
 
-            return Ok("changed");
+        [Route("Author")]
+        [HttpPatch]
+        public IHttpActionResult ChangeFirstname(Author authInput)
+        {
+            using (var bc = new BlogEntities())
+            {
+                bc.Configuration.ProxyCreationEnabled = true;
+
+                var authors = bc.Authors.Include(a => a.Blogs);
+                if (authInput != null)
+                {
+                    Author au = authors.FirstOrDefault(a=>a.Id == authInput.Id);
+                    if (au != null)
+                        au.FirstName = authInput.FirstName;
+
+                    bc.SaveChanges();
+                    return Ok(au);
+                }
+                else
+                    return BadRequest("invalid request body or empty body");
+            }
         }
 
         //POST http://localhost:41293/api/SuffixNested/allauthors HTTP/1.1
@@ -377,6 +455,14 @@ namespace Spring.Mvc5QuickStart.Controllers
         public void Delete(int id)
         {
         }
+
+    }
+
+    public class ErrorBody
+    {
+        //public ErrorBody() { }
+        public string Error { get; set; }
+        public Author[] Result { get; set; }
     }
 
     public class Blog

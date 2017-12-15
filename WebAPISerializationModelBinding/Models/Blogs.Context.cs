@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace Spring.Mvc5QuickStart.Models
+namespace WebAPIComprehensive.Models
 {
     using System;
     using System.Data.Entity;
