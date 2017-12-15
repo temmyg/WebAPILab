@@ -32,6 +32,9 @@ namespace WebAPIComprehensive.Models
     	
         //[DataMember]
         public long AuthorId { get; set; }
+    	
+        //[DataMember]
+        public string Category { get; set; }
     
     	//[DataMember]
         public virtual Author Author { get; set; }

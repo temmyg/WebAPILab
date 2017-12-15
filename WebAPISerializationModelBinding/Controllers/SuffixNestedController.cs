@@ -65,7 +65,7 @@ namespace WebAPIComprehensive.Controllers
         [Route("authors")]
         [HttpPut]
         public IHttpActionResult AddAuthors(Author[] authors)
-        {   
+        {
             if (ModelState.IsValid && authors != null && authors.Length != 0)
             {
                 using (var bc = new BlogEntities())
@@ -77,18 +77,18 @@ namespace WebAPIComprehensive.Controllers
                         bc.SaveChanges();
                         return Ok(authors);
                     }
-                    catch(Exception ex)
+                    catch (Exception ex)
                     {
                         HttpResponseMessage response = new HttpResponseMessage(HttpStatusCode.BadRequest)
                         {
                             Content = new ObjectContent(typeof(ErrorBody),
                                 new ErrorBody { Error = "not added", Result = authors },
                                 Configuration.Formatters.XmlFormatter)
-                                //new JsonMediaTypeFormatter())
+                            //new JsonMediaTypeFormatter())
                         };
                         throw new HttpResponseException(response);
                         //return ResponseMessage(Request.CreateResponse(HttpStatusCode.BadRequest, 
-                          //  new { Error ="not added", Result = authors })); 
+                        //  new { Error ="not added", Result = authors })); 
                     }
                 }
             }
@@ -251,15 +251,16 @@ namespace WebAPIComprehensive.Controllers
         {
             using (var bc = new BlogEntities())
             {
-                var authors = bc.Authors.Include(a=>a.Blogs);
+                var authors = bc.Authors.Include(a => a.Blogs);
                 foreach (string id in ids)
                 {
                     long authId = long.Parse(id);
-                    Author au = authors.FirstOrDefault(a => a.Id == authId );
+                    Author au = authors.FirstOrDefault(a => a.Id == authId);
                     if (au != null)
                         au.Industry = IndustryName;
                 }
                 bc.SaveChanges();
+                ((IObjectContextAdapter)bc).ObjectContext.Refresh(RefreshMode.StoreWins, authors);
                 return Ok(authors.ToList());
             }
         }
@@ -275,7 +276,7 @@ namespace WebAPIComprehensive.Controllers
                 var authors = bc.Authors.Include(a => a.Blogs);
                 if (authInput != null)
                 {
-                    Author au = authors.FirstOrDefault(a=>a.Id == authInput.Id);
+                    Author au = authors.FirstOrDefault(a => a.Id == authInput.Id);
                     if (au != null)
                         au.FirstName = authInput.FirstName;
 
@@ -325,9 +326,9 @@ namespace WebAPIComprehensive.Controllers
         {
             using (BlogEntities BE = new BlogEntities())
             {
-                BE.Configuration.ProxyCreationEnabled = false;
+                BE.Configuration.ProxyCreationEnabled = true;
 
-                var auths = BE.Authors;
+                var auths = BE.Authors.Include(a => a.Blogs);
                 var result = auths.ToList();  // auths.Select(auth1 => new Author("Large"));
                 return result;
                 //return auth.ToList();    
@@ -338,10 +339,18 @@ namespace WebAPIComprehensive.Controllers
         }
 
         [Route("author")]
-        public Author GetAuthor()  //public Hero GetAuthor()
+        public IHttpActionResult GetAuthor(string id)  //public Hero GetAuthor()
         {
             //return new Hero { Name = "Penko", level = 10 };
-            return new Author("Penko");
+            using (var bc = new BlogEntities())
+            {
+                long authId = long.Parse(id);
+                var author = bc.Authors.Include(a => a.Blogs).FirstOrDefault(a => a.Id == authId);
+                if (author == null)
+                    return BadRequest(String.Format("Author under id {0} not found", id));
+                else
+                    return Ok(author);
+            }
         }
 
         //[Route("isgreeting/{keyword:int?}")]
@@ -349,7 +358,7 @@ namespace WebAPIComprehensive.Controllers
         [HttpPost]
         public string IsGreetingExist([FromBody]Blog blog)
         {
-            return "Hello " + blog.keyword;
+            return "Hello " + blog.title;
         }
 
         //POST http://localhost:41293/api/SuffixNested/title HTTP/1.1
@@ -368,10 +377,24 @@ namespace WebAPIComprehensive.Controllers
         // 
         // @@return "Hiking blog title"
         [HttpPost]
-        [Route("title")]
-        public string GetBlogTitle([FromBody]string blogName)
+        [Route("blog")]
+        public IHttpActionResult GetBlogTitle([FromBody]string title)
         {
-            return blogName + " blog title";
+            using (var bc = new BlogEntities())
+            {
+                bc.Configuration.ProxyCreationEnabled = true;
+                bc.Configuration.LazyLoadingEnabled = false;
+
+                Blog blog = bc.Blogs.Include(b => b.Author).FirstOrDefault(b => b.title == title); //.ToList()[0];
+                //Author a = new Author { FirstName = blog.Author.FirstName };
+                //blog.Author = a;
+                //bc.Entry(blog).Reference(b=>b.Author).Load();
+                //var blog = new Blog() { title = title, @Author = new Author() { Id = 9 } };
+                if (blog == null)
+                    return BadRequest("not found");
+                else
+                    return Ok(blog);
+            }
         }
 
         //POST http://localhost:41293/api/SuffixNested/author HTTP/1.1
@@ -399,7 +422,15 @@ namespace WebAPIComprehensive.Controllers
             return blogName + " blog author";
         }
 
-        // api/SuffixNested?guid=5D300C9F-B82E-43B2-A89A-22FC7E7ADA5E
+        //without routeattribute, request like:
+        //GET http://localhost:41293/api/SuffixNested?guid=5D300C9F-B82E-43B2-A89A-22FC7E7ADA5E
+        //
+        //with routeattribute
+        //GET http://localhost:41293/api/SuffixNested/blogcategory?guid=5D300C9F-B82E-43B2-A89A-22FC7E7ADA5E HTTP/1.1
+        //Host: localhost:41293
+        //Connection: keep-alive
+        //....
+        [Route("blogcategory")]
         public HttpResponseMessage GetBlogCategory(Guid guid)
         {
             if (guid == Guid.Empty)
@@ -425,20 +456,35 @@ namespace WebAPIComprehensive.Controllers
         //Accept-Encoding: gzip, deflate, br
         //Accept-Language: en-US,en;q=0.9
         [HttpPatch]
-        [Route("{guid:guid?}")]
-        public HttpResponseMessage ChangeBlogCategory(string categoryName, Guid? guid = null)
+        [Route("blogs/{guid:guid?}")]
+        public IHttpActionResult ChangeBlogCategory([FromBody]string categoryName, Guid? guid = null)
         {
             if (guid == null)
             {
                 string error = "guid not valid";
-                return Request.CreateErrorResponse(HttpStatusCode.BadRequest, error);
+                return BadRequest(error);
             }
             else
-                return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                using (var bc = new BlogEntities())
                 {
-                    Content = new StringContent("Category Changed"),
-                    RequestMessage = Request
-                };
+                    bc.Configuration.ProxyCreationEnabled = false;
+                    var blog = bc.Blogs.Include(b => b.Author).FirstOrDefault(b => b.ID == guid);
+                    blog.Category = categoryName;
+
+                    try
+                    {
+                        bc.SaveChanges();
+                        bc.Entry(blog).Reload();
+                        return Ok(blog);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new HttpResponseException(Request.CreateErrorResponse(HttpStatusCode.InternalServerError, ex));
+                    }
+                }
+
+            }
         }
 
         // POST /api/suffixnested
@@ -465,10 +511,7 @@ namespace WebAPIComprehensive.Controllers
         public Author[] Result { get; set; }
     }
 
-    public class Blog
-    {
-        public string keyword { get; set; }
-    }
+
 
 
     public class Hero

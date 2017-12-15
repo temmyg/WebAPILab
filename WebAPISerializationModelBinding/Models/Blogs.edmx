@@ -25,6 +25,7 @@
           <Property Name="content" Type="nvarchar" MaxLength="150" />
           <Property Name="CreatedTime" Type="datetime" Nullable="false" />
           <Property Name="AuthorId" Type="bigint" Nullable="false" />
+          <Property Name="Category" Type="nvarchar" MaxLength="50" />
         </EntityType>
         <Association Name="FK_Blog_Author">
           <End Role="Author" Type="Self.Author" Multiplicity="1" />
@@ -67,11 +68,12 @@
             <PropertyRef Name="ID" />
           </Key>
           <Property Name="ID" Type="Guid" Nullable="false" />
-          <Property Name="title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="title" Type="String" MaxLength="50" FixedLength="false" Unicode="true" Nullable="false" ConcurrencyMode="Fixed" />
           <Property Name="content" Type="String" MaxLength="150" FixedLength="false" Unicode="true" />
           <Property Name="CreatedTime" Type="DateTime" Nullable="false" Precision="3" />
           <Property Name="AuthorId" Type="Int64" Nullable="false" />
           <NavigationProperty Name="Author" Relationship="Self.FK_Blog_Author" FromRole="Blog" ToRole="Author" />
+          <Property Name="Category" Type="String" MaxLength="50" FixedLength="false" Unicode="true" ConcurrencyMode="Fixed" />
         </EntityType>
         <Association Name="FK_Blog_Author">
           <End Role="Author" Type="Self.Author" Multiplicity="1" />
@@ -114,6 +116,7 @@
           <EntitySetMapping Name="Blogs">
             <EntityTypeMapping TypeName="BlogsModel.Blog">
               <MappingFragment StoreEntitySet="Blog">
+                <ScalarProperty Name="Category" ColumnName="Category" />
                 <ScalarProperty Name="ID" ColumnName="ID" />
                 <ScalarProperty Name="title" ColumnName="title" />
                 <ScalarProperty Name="content" ColumnName="content" />
