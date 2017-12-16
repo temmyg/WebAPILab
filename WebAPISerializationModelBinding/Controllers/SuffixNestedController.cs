@@ -124,111 +124,116 @@ namespace WebAPIComprehensive.Controllers
         [HttpPost]
         public IHttpActionResult UpdateAuthors(Author[] data)
         {
-            if (data != null && data.Length != 0)
+            if (ModelState.IsValid)
             {
-                List<Author> added = new List<Author>();
-                List<Author> modified = new List<Author>();
-
-                using (var bc = new BlogEntities())
+                if (data != null && data.Length != 0)
                 {
-                    var authsExists = bc.Authors;
-                    long maxId = authsExists.Max(auth1 => auth1.Id);
-                    //bc.Configuration.ProxyCreationEnabled = false;
-                    foreach (Author auth in data)
+                    List<Author> added = new List<Author>();
+                    List<Author> modified = new List<Author>();
+
+                    using (var bc = new BlogEntities())
                     {
-                        var target = bc.Authors.FirstOrDefault(authElem => authElem.Id == auth.Id);
-                        if (target != null)
+                        var authsExists = bc.Authors;
+                        long maxId = authsExists.Max(auth1 => auth1.Id);
+                        bc.Configuration.ProxyCreationEnabled = false;
+                        foreach (Author auth in data)
                         {
-                            target.RegisteredTime = DateTime.Now;
-                            target.FirstName = "Antone";
-                            modified.Add(target);
-                        }
-                        else
-                        {
-                            auth.RegisteredTime = DateTime.Now;
-                            auth.Id = ++maxId;
-                            authsExists.Add(auth);
-                            added.Add(auth);
-                        }
-                    }
-
-                    bool saveSuccess = false;
-                    do
-                    {
-                        try
-                        {
-                            //var entries = bc.ChangeTracker.Entries().ToList();
-                            //entries.ForEach(entry => entry.Reload());
-
-                            //refresh performance is better then individual reload on a batch of entries
-                            //((IObjectContextAdapter)bc).ObjectContext.Refresh(RefreshMode.StoreWins, bc.Authors);
-
-                            bc.SaveChanges();
-                            saveSuccess = true;
-
-                            if (added.Count > 1)
+                            var target = bc.Authors.FirstOrDefault(authElem => authElem.Id == auth.Id);
+                            if (target != null)
                             {
-                                return Ok(added);
-                            }
-                            else if (added.Count == 1)
-                            {
-                                var responseMessage = Request.CreateResponse(HttpStatusCode.Created, added[0]);
-
-                                // absolute uri
-                                //responseMessage.Headers.Location = new Uri(Url.Link("updateAuthors", null) 
-                                //    + "/" + added[0].Id.ToString());
-                                // relative uri
-                                responseMessage.Headers.Location = new Uri(Url.Route("updateAuthors", null)
-                                        + "/" + added[0].Id.ToString(), UriKind.Relative);
-                                return ResponseMessage(responseMessage);
-                            }
-                            // assume modification and create new request are always sent separately
-                            else if (modified.Count > 0)
-                            {
-                                return Ok(modified);
+                                target.RegisteredTime = DateTime.Now;
+                                target.FirstName = "Antone";
+                                modified.Add(target);
                             }
                             else
-                                return Ok();
-                        }
-                        catch (DbUpdateConcurrencyException ex)
-                        {
-                            foreach (var entry in ex.Entries)
                             {
-                                string changed = (string)entry.CurrentValues["FirstName"];
-                                entry.Reload();
-                                ((Author)entry.Entity).FirstName = changed;
-                            }
-                            //var updatedAuths = ex.Entries.Select(entry => entry.Entity);
-                        }
-                        catch (DbUpdateException ex)
-                        {
-                            var authors = bc.Authors;  //.First();
-
-                            //DbEntityEntry entry1 = bc.ChangeTracker.Entries()
-                            //.First(enty => ((Author)enty.Entity).Id == nwau.Id);
-
-                            ((IObjectContextAdapter)bc).ObjectContext.Refresh(RefreshMode.StoreWins,
-                                    authors);   //bc.Authors
-                            maxId = bc.Authors.Max(a => a.Id);
-                            foreach (var entry in ex.Entries)
-                            {
-                                ((Author)entry.Entity).Id = ++maxId;
+                                auth.RegisteredTime = DateTime.Now;
+                                auth.Id = ++maxId;
+                                authsExists.Add(auth);
+                                added.Add(auth);
                             }
                         }
+
+                        bool saveSuccess = false;
+                        do
+                        {
+                            try
+                            {
+                                //var entries = bc.ChangeTracker.Entries().ToList();
+                                //entries.ForEach(entry => entry.Reload());
+
+                                //refresh performance is better then individual reload on a batch of entries
+                                //((IObjectContextAdapter)bc).ObjectContext.Refresh(RefreshMode.StoreWins, bc.Authors);
+
+                                bc.SaveChanges();
+                                saveSuccess = true;
+
+                                if (added.Count > 1)
+                                {
+                                    return Ok(added);
+                                }
+                                else if (added.Count == 1)
+                                {
+                                    var responseMessage = Request.CreateResponse(HttpStatusCode.Created, added[0]);
+
+                                    // absolute uri
+                                    //responseMessage.Headers.Location = new Uri(Url.Link("updateAuthors", null) 
+                                    //    + "/" + added[0].Id.ToString());
+                                    // relative uri
+                                    responseMessage.Headers.Location = new Uri(Url.Route("updateAuthors", null)
+                                            + "/" + added[0].Id.ToString(), UriKind.Relative);
+                                    return ResponseMessage(responseMessage);
+                                }
+                                // assume modification and create new request are always sent separately
+                                else if (modified.Count > 0)
+                                {
+                                    return Ok(modified);
+                                }
+                                else
+                                    return Ok();
+                            }
+                            catch (DbUpdateConcurrencyException ex)
+                            {
+                                foreach (var entry in ex.Entries)
+                                {
+                                    string changed = (string)entry.CurrentValues["FirstName"];
+                                    entry.Reload();
+                                    ((Author)entry.Entity).FirstName = changed;
+                                }
+                                //var updatedAuths = ex.Entries.Select(entry => entry.Entity);
+                            }
+                            catch (DbUpdateException ex)
+                            {
+                                var authors = bc.Authors;  //.First();
+
+                                //DbEntityEntry entry1 = bc.ChangeTracker.Entries()
+                                //.First(enty => ((Author)enty.Entity).Id == nwau.Id);
+
+                                ((IObjectContextAdapter)bc).ObjectContext.Refresh(RefreshMode.StoreWins,
+                                        authors);   //bc.Authors
+                                maxId = bc.Authors.Max(a => a.Id);
+                                foreach (var entry in ex.Entries)
+                                {
+                                    ((Author)entry.Entity).Id = ++maxId;
+                                }
+                            }
+                        }
+                        while (!saveSuccess);
+
+                        //Author[] result = bc.Authors.Include(auth1 => auth1.Blogs).ToArray();
+                        return Ok();
                     }
-                    while (!saveSuccess);
-
-                    //Author[] result = bc.Authors.Include(auth1 => auth1.Blogs).ToArray();
-                    return Ok();
+                }
+                else
+                {
+                    throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
+                    {
+                        Content = new StringContent("no correct data in request body")
+                    });
                 }
             }
             else
-            {
-                throw new HttpResponseException(new HttpResponseMessage(HttpStatusCode.BadRequest)
-                {
-                    Content = new StringContent("no correct data in request body")
-                });
-            }
+                return ResponseMessage(Request.CreateErrorResponse(HttpStatusCode.BadRequest, ModelState));           
         }
 
         //PATCH http://localhost:41293/api/SuffixNested/authors?industryname=Bank HTTP/1.1
@@ -247,6 +252,7 @@ namespace WebAPIComprehensive.Controllers
         //[ '1', '2']
         [Route("Authors")]
         [HttpPatch]
+        [Authorize(Users="abc")]
         public IHttpActionResult ChangeAuthorsIndustry(string[] ids, string IndustryName)
         {
             using (var bc = new BlogEntities())
@@ -274,7 +280,7 @@ namespace WebAPIComprehensive.Controllers
                 bc.Configuration.ProxyCreationEnabled = true;
 
                 var authors = bc.Authors.Include(a => a.Blogs);
-                if (authInput != null)
+                if (ModelState.IsValid && authInput != null)
                 {
                     Author au = authors.FirstOrDefault(a => a.Id == authInput.Id);
                     if (au != null)
@@ -510,9 +516,6 @@ namespace WebAPIComprehensive.Controllers
         public string Error { get; set; }
         public Author[] Result { get; set; }
     }
-
-
-
 
     public class Hero
     {

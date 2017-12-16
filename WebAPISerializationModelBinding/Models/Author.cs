@@ -11,10 +11,12 @@ namespace WebAPIComprehensive.Models
 {
     using System;
     using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
+    using WebAPIComprehensive.Attributes;
     
     //using System.Runtime.Serialization;
     
-    //[DataContract(IsReference=true)]
+    //[DataContract(IsReference=true)]    
     public partial class Author
     {
         public Author()
@@ -33,6 +35,7 @@ namespace WebAPIComprehensive.Models
         public Nullable<int> Age { get; set; }
     	
         //[DataMember]
+        [Required]
         public string FirstName { get; set; }
     	
         //[DataMember]
